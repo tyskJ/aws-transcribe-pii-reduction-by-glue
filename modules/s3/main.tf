@@ -41,6 +41,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "transcribe_src" {
   }
 }
 
+### Object
+# resource "aws_s3_object" "wav" {
+#   bucket = aws_s3_bucket.transcribe_src.id
+#   key    = "sample.wav"
+#   source = "${path.module}/asset/sample.wav"
+# }
+
 /************************************************************
 Bucket - Transcribe Dst
 ************************************************************/
