@@ -5,3 +5,8 @@ variable "account_id" {
 variable "region" {
   type = string
 }
+
+variable "create_object" {
+  type    = bool
+  default = false
+}
