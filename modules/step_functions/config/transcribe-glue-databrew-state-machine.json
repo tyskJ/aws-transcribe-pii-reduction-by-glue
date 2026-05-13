@@ -1,7 +1,25 @@
 {
   "Comment": "A description of my state machine",
-  "StartAt": "Success",
+  "StartAt": "Assign Variables",
   "States": {
+    "Assign Variables": {
+      "Type": "Pass",
+      "Next": "StartTranscriptionJob",
+      "Assign": {
+        "srcBucket": "{% $states.input.src_bucket %}",
+        "objectKey": "{% $states.input.object_key %}"
+      }
+    },
+    "StartTranscriptionJob": {
+      "Type": "Task",
+      "Arguments": {
+        "Media": {},
+        "TranscriptionJobName": "MyData"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:transcribe:startTranscriptionJob",
+      "Next": "Success",
+      "Comment": "Execute text conversion"
+    },
     "Success": {
       "Type": "Succeed"
     }
