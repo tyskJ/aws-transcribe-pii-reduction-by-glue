@@ -37,5 +37,9 @@ module "step_functions" {
 EventBridge
 ************************************************************/
 module "eventbridge" {
-  source = "../modules/event_bridge"
+  source = "../modules/eventbridge"
+
+  transcribe_src_bucket_name = module.s3.name_transcribe_src_bucket
+  sf_arn                     = module.step_functions.arn_sf
+  eventbridge_rule_role_arn  = module.iam.arn_eventbridge_rule_role
 }

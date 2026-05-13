@@ -29,3 +29,27 @@ resource "aws_iam_role_policy_attachment" "step_functions" {
   role       = aws_iam_role.step_functions.name
   policy_arn = each.value
 }
+
+/************************************************************
+EventBridge Rule Role
+************************************************************/
+resource "aws_iam_role" "eventbridge_rule" {
+  name = "iam-role-eventbridge-rule"
+  tags = {
+    Name = "iam-role-eventbridge-rule"
+  }
+  description = "Allows CloudWatch Events to invoke targets and perform actions in built-in targets on your behalf."
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = ""
+        Effect = "Allow"
+        Principal = {
+          Service = "events.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
