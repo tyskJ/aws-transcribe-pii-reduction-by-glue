@@ -32,3 +32,10 @@ module "step_functions" {
   sfrole_arn = module.iam.arn_sfrole
   sflogs_arn = module.cloudwatch.arn_sflogs
 }
+
+/************************************************************
+EventBridge
+************************************************************/
+module "eventbridge" {
+  source = "../modules/event_bridge"
+}
