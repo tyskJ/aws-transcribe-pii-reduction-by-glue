@@ -8,3 +8,10 @@ module "s3" {
   region        = local.region_name
   create_object = false
 }
+
+/************************************************************
+IAM
+************************************************************/
+module "iam" {
+  source = "../modules/iam_role"
+}
