@@ -50,6 +50,12 @@ resource "aws_s3_object" "wav" {
   source = "${path.module}/asset/sample.wav"
 }
 
+### Event Notifications
+resource "aws_s3_bucket_notification" "transcribe_src_bucket_notification" {
+  bucket      = aws_s3_bucket.transcribe_src.id
+  eventbridge = true
+}
+
 /************************************************************
 Bucket - Transcribe Dst
 ************************************************************/
