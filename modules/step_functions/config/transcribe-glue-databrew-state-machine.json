@@ -34,11 +34,55 @@
         }
       },
       "Resource": "arn:aws:states:::aws-sdk:transcribe:startTranscriptionJob",
-      "Next": "Success",
-      "Comment": "Execute text conversion"
+      "Next": "Wait5Sec",
+      "Comment": "Execute text conversion",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "TranscriptionJobFailed"
+        }
+      ]
+    },
+    "Wait5Sec": {
+      "Type": "Wait",
+      "Seconds": 5,
+      "Next": "GetTranscriptionJob"
+    },
+    "GetTranscriptionJob": {
+      "Type": "Task",
+      "Arguments": {
+        "TranscriptionJobName": "{% $states.input.TranscriptionJob.TranscriptionJobName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:transcribe:getTranscriptionJob",
+      "Next": "Choice",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "TranscriptionJobFailed"
+        }
+      ]
+    },
+    "Choice": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "Success",
+          "Condition": "{% $states.input.TranscriptionJob.TranscriptionJobStatus = 'COMPLETED' %}"
+        },
+        {
+          "Next": "TranscriptionJobFailed",
+          "Condition": "{% $states.input.TranscriptionJob.TranscriptionJobStatus = 'FAILED' %}"
+        }
+      ],
+      "Default": "Wait5Sec"
     },
     "Success": {
       "Type": "Succeed"
+    },
+    "TranscriptionJobFailed": {
+      "Type": "Fail",
+      "Error": "TranscriptionJobFailedException",
+      "Cause": "Transcription job failed"
     }
   },
   "QueryLanguage": "JSONata"
