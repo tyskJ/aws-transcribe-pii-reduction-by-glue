@@ -47,7 +47,77 @@ resource "aws_iam_policy" "sf_statemachine_ops" {
         Action = [
           "states:StartExecution"
         ],
+        Resource = [
+          "arn:${var.partition}:states:${var.region}:${var.account_id}:stateMachine:*"
+        ]
+      }
+    ]
+  })
+}
+
+/************************************************************
+Transcribe Operation Policy
+************************************************************/
+resource "aws_iam_policy" "transcribe_ops" {
+  name = "iam-policy-transcribe-ops"
+  tags = {
+    Name = "iam-policy-transcribe-ops"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowStartTranscribeJob"
+        Effect = "Allow"
+        Action = [
+          "transcribe:StartTranscriptionJob"
+        ],
         Resource = ["*"]
+      },
+      {
+        Sid    = "AllowGetTranscribeJob"
+        Effect = "Allow"
+        Action = [
+          "transcribe:GetTranscriptionJob"
+        ],
+        Resource = [
+          "arn:${var.partition}:transcribe:${var.region}:${var.account_id}:transcription-job/*"
+        ]
+      }
+    ]
+  })
+}
+
+/************************************************************
+S3 Operation Policy
+************************************************************/
+resource "aws_iam_policy" "s3_ops" {
+  name = "iam-policy-s3-ops"
+  tags = {
+    Name = "iam-policy-s3-ops"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowGetObject"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = [
+          "${var.transcribe_src_bucket_arn}/*"
+        ]
+      },
+      {
+        Sid    = "AllowPutObject"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject"
+        ],
+        Resource = [
+          "${var.transcribe_dst_bucket_arn}/*"
+        ]
       }
     ]
   })
