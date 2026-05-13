@@ -36,12 +36,12 @@ resource "aws_cloudwatch_event_target" "transcribe_src_bucket_put_event_sf" {
   arn            = var.sf_arn
   input_transformer {
     input_paths = {
-      bucket     = "$.detail.bucket.name"
+      src_bucket = "$.detail.bucket.name"
       object_key = "$.detail.object.key"
     }
     input_template = <<EOF
 {
-  "bucket": <bucket>,
+  "src_bucket": <src_bucket>,
   "object_key": <object_key>
 }
     EOF
