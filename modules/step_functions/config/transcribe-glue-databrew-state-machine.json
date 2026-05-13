@@ -6,15 +6,32 @@
       "Type": "Pass",
       "Next": "StartTranscriptionJob",
       "Assign": {
-        "srcBucket": "{% $states.input.src_bucket %}",
+        "transcribeSrcBucket": "{% $states.input.transcribe_src_bucket %}",
+        "transcribeDstBucket": "{% $states.input.transcribe_dst_bucket %}",
         "objectKey": "{% $states.input.object_key %}"
       }
     },
     "StartTranscriptionJob": {
       "Type": "Task",
       "Arguments": {
-        "Media": {},
-        "TranscriptionJobName": "MyData"
+        "TranscriptionJobName": "{% $objectKey & '-convert-job-' & $states.context.Execution.Name %}",
+        "IdentifyLanguage": false,
+        "IdentifyMultipleLanguages": false,
+        "LanguageCode": "ja-JP",
+        "Media": {
+          "MediaFileUri": "{% 's3://' & $transcribeSrcBucket & '/' & $objectKey %}"
+        },
+        "MediaFormat": "wav",
+        "OutputBucketName": "{% $transcribeDstBucket %}",
+        "OutputKey": "{% $states.input.object_key & '/' & $replace($split($states.input.object_key, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
+        "Subtitles": {
+          "Formats": ["vtt"],
+          "OutputStartIndex": 0
+        },
+        "Settings": {
+          "ShowSpeakerLabels": true,
+          "MaxSpeakerLabels": 10
+        }
       },
       "Resource": "arn:aws:states:::aws-sdk:transcribe:startTranscriptionJob",
       "Next": "Success",
