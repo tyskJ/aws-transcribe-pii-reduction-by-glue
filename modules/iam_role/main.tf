@@ -53,3 +53,11 @@ resource "aws_iam_role" "eventbridge_rule" {
     ]
   })
 }
+
+resource "aws_iam_role_policy_attachment" "eventbridge_rule" {
+  for_each = {
+    sf_statemachine = aws_iam_policy.sf_statemachine_ops.arn
+  }
+  role       = aws_iam_role.eventbridge_rule.name
+  policy_arn = each.value
+}

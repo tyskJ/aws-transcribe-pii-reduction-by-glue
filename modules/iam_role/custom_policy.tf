@@ -1,5 +1,5 @@
 /************************************************************
-CloudWatch Vended Logs Policy
+CloudWatch Vended Logs Operation Policy
 ************************************************************/
 resource "aws_iam_policy" "cwlogs_vended_delivery" {
   name = "iam-policy-cwlogs-vended-delivery"
@@ -23,6 +23,29 @@ resource "aws_iam_policy" "cwlogs_vended_delivery" {
           "logs:PutResourcePolicy",
           "logs:DescribeResourcePolicies",
           "logs:DescribeLogGroups"
+        ],
+        Resource = ["*"]
+      }
+    ]
+  })
+}
+
+/************************************************************
+Step Functions State Machine Operation Policy
+************************************************************/
+resource "aws_iam_policy" "sf_statemachine_ops" {
+  name = "iam-policy-sf-statemachine-ops"
+  tags = {
+    Name = "iam-policy-sf-statemachine-ops"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowSfStateMachineOps"
+        Effect = "Allow"
+        Action = [
+          "states:StartExecution"
         ],
         Resource = ["*"]
       }
