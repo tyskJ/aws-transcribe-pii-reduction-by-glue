@@ -15,3 +15,20 @@ IAM
 module "iam" {
   source = "../modules/iam_role"
 }
+
+/************************************************************
+CloudWatch
+************************************************************/
+module "cloudwatch" {
+  source = "../modules/cloudwatch"
+}
+
+/************************************************************
+Step Functions
+************************************************************/
+module "step_functions" {
+  source = "../modules/step_functions"
+
+  sfrole_arn = module.iam.arn_sfrole
+  sflogs_arn = module.cloudwatch.arn_sflogs
+}
