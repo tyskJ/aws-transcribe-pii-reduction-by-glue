@@ -46,6 +46,7 @@ module "eventbridge" {
   source = "../modules/eventbridge"
 
   transcribe_src_bucket_name = module.s3.name_transcribe_src_bucket
+  transcribe_dst_bucket_name = module.s3.name_transcribe_dst_bucket
   sf_arn                     = module.step_functions.arn_sf
   eventbridge_rule_role_arn  = module.iam.arn_eventbridge_rule_role
 }

@@ -41,7 +41,8 @@ resource "aws_cloudwatch_event_target" "transcribe_src_bucket_put_event_sf" {
     }
     input_template = <<EOF
 {
-  "src_bucket": <src_bucket>,
+  "transcribe_src_bucket": <src_bucket>,
+  "transcribe_dst_bucket": "${var.transcribe_dst_bucket_name}",
   "object_key": <object_key>
 }
     EOF
