@@ -5,3 +5,7 @@ output "arn_sfrole" {
 output "arn_eventbridge_rule_role" {
   value = aws_iam_role.eventbridge_rule.arn
 }
+
+output "arn_lambda" {
+  value = aws_iam_role.lambda.arn
+}
