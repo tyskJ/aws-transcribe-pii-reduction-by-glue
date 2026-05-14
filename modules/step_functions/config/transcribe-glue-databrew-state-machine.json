@@ -25,7 +25,9 @@
         "OutputBucketName": "{% $transcribeDstBucket %}",
         "OutputKey": "{% $states.input.object_key & '/' & $replace($split($states.input.object_key, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
         "Subtitles": {
-          "Formats": ["vtt"],
+          "Formats": [
+            "vtt"
+          ],
           "OutputStartIndex": 0
         },
         "Settings": {
@@ -39,7 +41,9 @@
       "Comment": "Execute text conversion",
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "TranscriptionJobFailed"
         }
       ]
@@ -58,7 +62,9 @@
       "Next": "Choice",
       "Catch": [
         {
-          "ErrorEquals": ["States.ALL"],
+          "ErrorEquals": [
+            "States.ALL"
+          ],
           "Next": "TranscriptionJobFailed"
         }
       ]
@@ -67,7 +73,7 @@
       "Type": "Choice",
       "Choices": [
         {
-          "Next": "Success",
+          "Next": "ConverterLambdaInvoke",
           "Condition": "{% $states.input.TranscriptionJob.TranscriptionJobStatus = 'COMPLETED' %}"
         },
         {
@@ -76,6 +82,43 @@
         }
       ],
       "Default": "Wait5Sec"
+    },
+    "ConverterLambdaInvoke": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "${converter_lambda_arn}:$LATEST",
+        "Payload": "{% $states.input %}"
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "ConverterFailed"
+        }
+      ]
+    },
+    "ConverterFailed": {
+      "Type": "Fail",
+      "Error": "ConverterFailedException",
+      "Cause": "Converter failed"
     },
     "Success": {
       "Type": "Succeed"
