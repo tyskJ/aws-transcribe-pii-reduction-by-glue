@@ -124,3 +124,28 @@ resource "aws_iam_policy" "s3_ops" {
     ]
   })
 }
+
+/************************************************************
+Lambda Operation Policy
+************************************************************/
+resource "aws_iam_policy" "lambda_ops" {
+  name = "iam-policy-lambda-ops"
+  tags = {
+    Name = "iam-policy-lambda-ops"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowLambdaOps"
+        Effect = "Allow"
+        Action = [
+          "lambda:InvokeFunction"
+        ],
+        Resource = [
+          "arn:${var.partition}:lambda:${var.region}:${var.account_id}:function:*"
+        ]
+      }
+    ]
+  })
+}

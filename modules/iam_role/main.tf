@@ -27,6 +27,7 @@ resource "aws_iam_role_policy_attachment" "step_functions" {
     cwlogs_vended_delivery = aws_iam_policy.cwlogs_vended_delivery.arn
     transcribe             = aws_iam_policy.transcribe_ops.arn
     s3                     = aws_iam_policy.s3_ops.arn
+    lambda                 = aws_iam_policy.lambda_ops.arn
   }
   role       = aws_iam_role.step_functions.name
   policy_arn = each.value
