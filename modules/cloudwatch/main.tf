@@ -24,3 +24,14 @@ resource "aws_cloudwatch_log_group" "lambda_converter_logs" {
     Name = "/aws/lambda/transcribe-json-to-csv"
   }
 }
+
+resource "aws_cloudwatch_log_group" "lambda_createwav_logs" {
+  name                        = "/aws/lambda/create-wav"
+  log_group_class             = "STANDARD"
+  retention_in_days           = 7
+  deletion_protection_enabled = false
+  skip_destroy                = false
+  tags = {
+    Name = "/aws/lambda/create-wav"
+  }
+}
