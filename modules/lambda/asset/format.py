@@ -1,3 +1,6 @@
+"""
+Transcribe出力ファイル成形
+"""
 import json
 import csv
 import os
@@ -33,10 +36,9 @@ def write_csv(rows: List[List[Any]], output_path: Path) -> None:
         writer.writerow(["start_time", "end_time", "speaker_label", "text"])
         writer.writerows(rows)
 
-
-# -------------------------
-# Lambda handler
-# -------------------------
+"""
+Lambda handler
+"""
 def lambda_handler(event, context):
     """
     Step Functions から呼ばれる想定
@@ -63,9 +65,9 @@ def lambda_handler(event, context):
     }
 
 
-# -------------------------
-# Local execution
-# -------------------------
+"""
+Local execution
+"""
 if __name__ == "__main__":
     import sys
 
