@@ -5,3 +5,7 @@ variable "lambda_role_arn" {
 variable "converter_lambda_loggroup_name" {
   type = string
 }
+
+variable "createwav_lambda_loggroup_name" {
+  type = string
+}

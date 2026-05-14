@@ -29,3 +29,32 @@ resource "aws_lambda_function" "converter" {
     Name = "transcribe-json-to-csv"
   }
 }
+
+resource "aws_lambda_function" "createwav" {
+  function_name    = "create-wav"
+  description      = "Create WAV File include PII"
+  runtime          = "python3.14"
+  architectures    = ["x86_64"]
+  filename         = data.archive_file.createwav.output_path
+  source_code_hash = data.archive_file.createwav.output_base64sha256
+  handler          = "create_include_pii_wav.lambda_handler"
+  timeout          = 900
+  memory_size      = 128
+  ephemeral_storage {
+    size = 512
+  }
+  role = var.lambda_role_arn
+  logging_config {
+    log_group             = var.createwav_lambda_loggroup_name
+    log_format            = "JSON"
+    application_log_level = "INFO"
+    system_log_level      = "INFO"
+  }
+  tracing_config {
+    mode = "PassThrough"
+  }
+  skip_destroy = false
+  tags = {
+    Name = "create-wav"
+  }
+}
