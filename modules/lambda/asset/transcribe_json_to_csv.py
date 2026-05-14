@@ -1,5 +1,6 @@
 """
-Transcribe出力をcsv形式に成形
+- Transcribe出力をcsv形式に成形
+- エラーハンドリングは Step Functions 側に持たせるため try-catch は入れない
 """
 
 import json
@@ -76,22 +77,18 @@ def lambda_handler(event, context):
 
     event 想定：
     {
-      "input": {
-        "bucket": "transcribe-output-bucket",
-        "key": "job-123/output.json"
-      },
-      "output": {
-        "bucket": "databrew-input-bucket",
-        "key": "job-123/normalized.csv"
-      }
+        "inputBucket": "transcribe-json-bucket",
+        "inputKey": "json-file",
+        "outputBucket": "glue-csv-bucket",
+        "outputKey": "csv-file" 
     }
     """
 
     """
     入力取得（S3 → JSON）
     """
-    input_bucket = event["input"]["bucket"]
-    input_key = event["input"]["key"]
+    input_bucket = event["inputBucket"]
+    input_key = event["inputKey"]
 
     s3 = boto3.client("s3")
     obj = s3.get_object(
@@ -112,8 +109,8 @@ def lambda_handler(event, context):
     """
     出力（CSV → 別バケットへ）
     """
-    output_bucket = event["output"]["bucket"]
-    output_key = event["output"]["key"]
+    output_bucket = event["outputBucket"]
+    output_key = event["outputKey"]
 
     s3.put_object(
         Bucket=output_bucket,
