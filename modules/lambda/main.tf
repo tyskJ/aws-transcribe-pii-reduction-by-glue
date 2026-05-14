@@ -9,7 +9,7 @@ resource "aws_lambda_function" "converter" {
   filename         = data.archive_file.converter.output_path
   source_code_hash = data.archive_file.converter.output_base64sha256
   handler          = "transcribe_json_to_csv.lambda_handler"
-  timeout          = 3
+  timeout          = 900
   memory_size      = 128
   ephemeral_storage {
     size = 512
