@@ -139,7 +139,7 @@ if __name__ == "__main__":
     ローカルでの動作確認用。
 
     例：
-      python transcribe_to_databrew.py input.json output.csv
+      python transcribe_json_to_csv.py input.json output.csv
     """
 
     import sys
