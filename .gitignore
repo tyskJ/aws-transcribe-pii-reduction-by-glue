@@ -43,3 +43,5 @@ terraform.rc
 tmp.tf
 **/.key/*
 *.zip
+event.json
+response.json
