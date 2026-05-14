@@ -29,6 +29,7 @@
           "OutputStartIndex": 0
         },
         "Settings": {
+          "ChannelIdentification": false,
           "ShowSpeakerLabels": true,
           "MaxSpeakerLabels": 10
         }
