@@ -106,7 +106,8 @@ resource "aws_iam_policy" "s3_ops" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.transcribe_src_bucket_arn}/*"
+          "${var.transcribe_src_bucket_arn}/*",
+          "${var.transcribe_dst_bucket_arn}/*"
         ]
       },
       {
@@ -116,7 +117,8 @@ resource "aws_iam_policy" "s3_ops" {
           "s3:PutObject"
         ],
         Resource = [
-          "${var.transcribe_dst_bucket_arn}/*"
+          "${var.transcribe_dst_bucket_arn}/*",
+          "${var.glue_src_bucket_arn}/*"
         ]
       }
     ]

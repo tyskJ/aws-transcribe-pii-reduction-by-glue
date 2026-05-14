@@ -63,3 +63,36 @@ resource "aws_iam_role_policy_attachment" "eventbridge_rule" {
   role       = aws_iam_role.eventbridge_rule.name
   policy_arn = each.value
 }
+
+/************************************************************
+Lambda Role
+************************************************************/
+resource "aws_iam_role" "lambda" {
+  name = "iam-role-lambda"
+  tags = {
+    Name = "iam-role-lambda"
+  }
+  description = "Allows Lambda functions to call AWS services on your behalf."
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = ""
+        Effect = "Allow"
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda" {
+  for_each = {
+    cwlogs = "arn:${var.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    s3     = aws_iam_policy.s3_ops.arn
+  }
+  role       = aws_iam_role.lambda.name
+  policy_arn = each.value
+}
