@@ -8,6 +8,7 @@
       "Assign": {
         "transcribeSrcBucket": "{% $states.input.transcribe_src_bucket %}",
         "transcribeDstBucket": "{% $states.input.transcribe_dst_bucket %}",
+        "glueSrcBucket": "{% $states.input.glue_src_bucket %}",
         "objectKey": "{% $states.input.object_key %}"
       }
     },
@@ -23,7 +24,7 @@
         },
         "MediaFormat": "wav",
         "OutputBucketName": "{% $transcribeDstBucket %}",
-        "OutputKey": "{% $states.input.object_key & '/' & $replace($split($states.input.object_key, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
+        "OutputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
         "Subtitles": {
           "Formats": [
             "vtt"
@@ -89,7 +90,12 @@
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
         "FunctionName": "${converter_lambda_arn}:$LATEST",
-        "Payload": "{% $states.input %}"
+        "Payload": {
+          "inputBucket": "{% $transcribeDstBucket %}",
+          "inputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
+          "outputBucket": "{% $glueSrcBucket %}",
+          "outputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.csv' %}"
+        }
       },
       "Retry": [
         {
