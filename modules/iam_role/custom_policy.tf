@@ -149,3 +149,28 @@ resource "aws_iam_policy" "lambda_ops" {
     ]
   })
 }
+
+/************************************************************
+Polly Operation Policy
+************************************************************/
+resource "aws_iam_policy" "polly_ops" {
+  name = "iam-policy-polly-ops"
+  tags = {
+    Name = "iam-policy-polly-ops"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowPollyOps"
+        Effect = "Allow"
+        Action = [
+          "polly:SynthesizeSpeech"
+        ],
+        Resource = [
+          "*"
+        ]
+      }
+    ]
+  })
+}
