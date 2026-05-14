@@ -6,7 +6,6 @@ module "s3" {
 
   account_id    = local.account_id
   region        = local.region_name
-  create_object = false
 }
 
 /************************************************************
@@ -37,7 +36,8 @@ module "lambda" {
   source = "../modules/lambda"
 
   lambda_role_arn                = module.iam.arn_lambda
-  converter_lambda_loggroup_name = module.cloudwatch.name_lambda_loggroup
+  converter_lambda_loggroup_name = module.cloudwatch.name_converter_lambda_loggroup
+  createwav_lambda_loggroup_name = module.cloudwatch.name_createwav_lambda_loggroup
 }
 
 /************************************************************
