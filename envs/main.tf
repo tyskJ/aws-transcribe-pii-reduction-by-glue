@@ -31,13 +31,24 @@ module "cloudwatch" {
 }
 
 /************************************************************
+Lambda
+************************************************************/
+module "lambda" {
+  source = "../modules/lambda"
+
+  lambda_role_arn                = module.iam.arn_lambda
+  converter_lambda_loggroup_name = module.cloudwatch.name_lambda_loggroup
+}
+
+/************************************************************
 Step Functions
 ************************************************************/
 module "step_functions" {
   source = "../modules/step_functions"
 
-  sfrole_arn = module.iam.arn_sfrole
-  sflogs_arn = module.cloudwatch.arn_sflogs
+  sfrole_arn           = module.iam.arn_sfrole
+  sflogs_arn           = module.cloudwatch.arn_sflogs
+  converter_lambda_arn = module.lambda.arn_converter_lambda
 }
 
 /************************************************************
