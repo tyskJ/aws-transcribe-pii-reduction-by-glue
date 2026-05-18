@@ -4,8 +4,8 @@ S3
 module "s3" {
   source = "../modules/s3"
 
-  account_id    = local.account_id
-  region        = local.region_name
+  account_id = local.account_id
+  region     = local.region_name
 }
 
 /************************************************************
@@ -19,6 +19,7 @@ module "iam" {
   account_id                = local.account_id
   transcribe_src_bucket_arn = module.s3.arn_transcribe_src_bucket
   transcribe_dst_bucket_arn = module.s3.arn_transcribe_dst_bucket
+  translate_en_bucket_arn   = module.s3.arn_translate_en_bucket
   glue_src_bucket_arn       = module.s3.arn_glue_src_bucket
 }
 

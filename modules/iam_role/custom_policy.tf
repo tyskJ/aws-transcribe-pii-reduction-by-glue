@@ -157,6 +157,48 @@ resource "aws_iam_policy" "glue_databrew_s3_ops" {
   })
 }
 
+resource "aws_iam_policy" "translate_s3_ops" {
+  name = "iam-policy-s3-ops-for-translate"
+  tags = {
+    Name = "iam-policy-s3-ops-for-translate"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowListOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "${var.transcribe_dst_bucket_arn}"
+        ]
+      },
+      {
+        Sid    = "AllowGetOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = [
+          "${var.transcribe_dst_bucket_arn}/*"
+        ]
+      },
+      {
+        Sid    = "AllowPutOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject"
+        ],
+        Resource = [
+          "${var.translate_en_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 /************************************************************
 Lambda Operation Policy
 ************************************************************/
