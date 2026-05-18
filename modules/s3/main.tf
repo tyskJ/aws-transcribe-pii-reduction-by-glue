@@ -90,6 +90,90 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "transcribe_dst" {
 }
 
 /************************************************************
+Bucket - Translate English
+************************************************************/
+resource "aws_s3_bucket" "translate_en" {
+  bucket              = "translate-en-${var.account_id}-${var.region}-an"
+  bucket_namespace    = "account-regional"
+  force_destroy       = true
+  object_lock_enabled = false
+  tags = {
+    Name = "translate-en-${var.account_id}-${var.region}-an"
+  }
+}
+
+### Bucket Public Access Block
+resource "aws_s3_bucket_public_access_block" "translate_en" {
+  bucket                  = aws_s3_bucket.translate_en.id
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
+
+### Object Ownership
+resource "aws_s3_bucket_ownership_controls" "translate_en" {
+  bucket = aws_s3_bucket.translate_en.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+### Server-Side Encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "translate_en" {
+  bucket = aws_s3_bucket.translate_en.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+    bucket_key_enabled       = true
+    blocked_encryption_types = ["SSE-C"]
+  }
+}
+
+/************************************************************
+Bucket - Translate Japanese
+************************************************************/
+resource "aws_s3_bucket" "translate_jp" {
+  bucket              = "translate-jp-${var.account_id}-${var.region}-an"
+  bucket_namespace    = "account-regional"
+  force_destroy       = true
+  object_lock_enabled = false
+  tags = {
+    Name = "translate-jp-${var.account_id}-${var.region}-an"
+  }
+}
+
+### Bucket Public Access Block
+resource "aws_s3_bucket_public_access_block" "translate_jp" {
+  bucket                  = aws_s3_bucket.translate_jp.id
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
+
+### Object Ownership
+resource "aws_s3_bucket_ownership_controls" "translate_jp" {
+  bucket = aws_s3_bucket.translate_jp.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+### Server-Side Encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "translate_jp" {
+  bucket = aws_s3_bucket.translate_jp.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+    bucket_key_enabled       = true
+    blocked_encryption_types = ["SSE-C"]
+  }
+}
+
+/************************************************************
 Bucket - Glue Src
 ************************************************************/
 ### Bucket
