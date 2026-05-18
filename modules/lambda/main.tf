@@ -1,4 +1,18 @@
 /************************************************************
+Layer
+************************************************************/
+resource "aws_lambda_layer_version" "json_converter" {
+  layer_name               = "json-converter-layer"
+  description              = "For Json Converter Lambda"
+  compatible_runtimes      = ["python3.14"]
+  compatible_architectures = ["x86_64"]
+  filename                 = data.archive_file.json_converter_lambda_layer.output_path
+  source_code_hash         = data.archive_file.json_converter_lambda_layer.output_base64sha256
+  skip_destroy             = true
+}
+
+
+/************************************************************
 Function
 ************************************************************/
 resource "aws_lambda_function" "json_converter" {
@@ -6,9 +20,9 @@ resource "aws_lambda_function" "json_converter" {
   description      = "Transcribe Json File Converter"
   runtime          = "python3.14"
   architectures    = ["x86_64"]
-  filename         = data.archive_file.converter.output_path
-  source_code_hash = data.archive_file.converter.output_base64sha256
-  handler          = "transcribe_json_to_csv.lambda_handler"
+  filename         = data.archive_file.json_converter.output_path
+  source_code_hash = data.archive_file.json_converter.output_base64sha256
+  handler          = "transcribe_json_to_excel.lambda_handler"
   timeout          = 900
   memory_size      = 128
   ephemeral_storage {
@@ -24,6 +38,9 @@ resource "aws_lambda_function" "json_converter" {
   tracing_config {
     mode = "PassThrough"
   }
+  layers = [
+    aws_lambda_layer_version.json_converter.arn
+  ]
   skip_destroy = false
   tags = {
     Name = reverse(split("/", var.json_converter_lambda_loggroup_name))[0]

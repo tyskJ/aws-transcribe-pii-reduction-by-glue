@@ -45,3 +45,4 @@ tmp.tf
 *.zip
 event.json
 response.json
+**/build
