@@ -1,9 +1,9 @@
-output "arn_sflogs" {
+output "arn_sf_loggroup" {
   value = aws_cloudwatch_log_group.sf_logs.arn
 }
 
-output "name_converter_lambda_loggroup" {
-  value = aws_cloudwatch_log_group.lambda_converter_logs.tags_all.Name
+output "name_json_converter_lambda_loggroup" {
+  value = aws_cloudwatch_log_group.lambda_json_converter_logs.tags_all.Name
 }
 
 output "name_createwav_lambda_loggroup" {
