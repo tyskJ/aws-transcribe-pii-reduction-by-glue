@@ -36,9 +36,9 @@ Lambda
 module "lambda" {
   source = "../modules/lambda"
 
-  lambda_role_arn                = module.iam.arn_lambda
-  converter_lambda_loggroup_name = module.cloudwatch.name_converter_lambda_loggroup
-  createwav_lambda_loggroup_name = module.cloudwatch.name_createwav_lambda_loggroup
+  lambda_role_arn                     = module.iam.arn_lambda
+  json_converter_lambda_loggroup_name = module.cloudwatch.name_json_converter_lambda_loggroup
+  createwav_lambda_loggroup_name      = module.cloudwatch.name_createwav_lambda_loggroup
 }
 
 /************************************************************
@@ -47,9 +47,9 @@ Step Functions
 module "step_functions" {
   source = "../modules/step_functions"
 
-  sfrole_arn           = module.iam.arn_sfrole
-  sflogs_arn           = module.cloudwatch.arn_sflogs
-  converter_lambda_arn = module.lambda.arn_converter_lambda
+  sfrole_arn                = module.iam.arn_sfrole
+  sflogs_arn                = module.cloudwatch.arn_sf_loggroup
+  json_converter_lambda_arn = module.lambda.arn_json_converter_lambda
 }
 
 /************************************************************

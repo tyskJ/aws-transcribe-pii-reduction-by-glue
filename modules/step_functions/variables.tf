@@ -6,6 +6,6 @@ variable "sflogs_arn" {
   type = string
 }
 
-variable "converter_lambda_arn" {
+variable "json_converter_lambda_arn" {
   type = string
 }

@@ -1,9 +1,9 @@
 /************************************************************
 Function
 ************************************************************/
-resource "aws_lambda_function" "converter" {
-  function_name    = "transcribe-json-to-csv"
-  description      = "Transcribe Json File To CSV File"
+resource "aws_lambda_function" "json_converter" {
+  function_name    = reverse(split("/", var.json_converter_lambda_loggroup_name))[0]
+  description      = "Transcribe Json File Converter"
   runtime          = "python3.14"
   architectures    = ["x86_64"]
   filename         = data.archive_file.converter.output_path
@@ -16,7 +16,7 @@ resource "aws_lambda_function" "converter" {
   }
   role = var.lambda_role_arn
   logging_config {
-    log_group             = var.converter_lambda_loggroup_name
+    log_group             = var.json_converter_lambda_loggroup_name
     log_format            = "JSON"
     application_log_level = "INFO"
     system_log_level      = "INFO"
@@ -26,12 +26,12 @@ resource "aws_lambda_function" "converter" {
   }
   skip_destroy = false
   tags = {
-    Name = "transcribe-json-to-csv"
+    Name = reverse(split("/", var.json_converter_lambda_loggroup_name))[0]
   }
 }
 
 resource "aws_lambda_function" "createwav" {
-  function_name    = "create-wav"
+  function_name    = reverse(split("/", var.createwav_lambda_loggroup_name))[0]
   description      = "Create WAV File include PII"
   runtime          = "python3.14"
   architectures    = ["x86_64"]
@@ -55,6 +55,6 @@ resource "aws_lambda_function" "createwav" {
   }
   skip_destroy = false
   tags = {
-    Name = "create-wav"
+    Name = reverse(split("/", var.createwav_lambda_loggroup_name))[0]
   }
 }
