@@ -98,3 +98,36 @@ resource "aws_iam_role_policy_attachment" "lambda" {
   role       = aws_iam_role.lambda.name
   policy_arn = each.value
 }
+
+/************************************************************
+Glue DataBrew Role
+************************************************************/
+resource "aws_iam_role" "glue_databrew" {
+  name = "iam-role-glue-databrew"
+  tags = {
+    Name = "iam-role-glue-databrew"
+  }
+  description = "Allows DataBrew to create and manage AWS resources on your behalf"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = ""
+        Effect = "Allow"
+        Principal = {
+          Service = "databrew.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "glue_databrew" {
+  for_each = {
+    databrew             = "arn:${var.partition}:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
+    glue_databrew_s3_ops = aws_iam_policy.glue_databrew_s3_ops.arn
+  }
+  role       = aws_iam_role.glue_databrew.name
+  policy_arn = each.value
+}

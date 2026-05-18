@@ -125,6 +125,38 @@ resource "aws_iam_policy" "s3_ops" {
   })
 }
 
+resource "aws_iam_policy" "glue_databrew_s3_ops" {
+  name = "iam-policy-s3-ops-for-glue-databrew"
+  tags = {
+    Name = "iam-policy-s3-ops-for-glue-databrew"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowListOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "${var.glue_src_bucket_arn}"
+        ]
+      },
+      {
+        Sid    = "AllowWiteOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = [
+          "${var.glue_src_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 /************************************************************
 Lambda Operation Policy
 ************************************************************/
