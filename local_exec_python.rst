@@ -74,4 +74,4 @@
 =====================================================================
 .. code-block::
 
-  python transcribe_json_to_excel.py pii_include.json out.xlsx
+  python transcribe_json_to_excel.py input.json output.xlsx
