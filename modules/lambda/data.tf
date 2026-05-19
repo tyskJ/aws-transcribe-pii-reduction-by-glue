@@ -1,22 +1,10 @@
-# data "external" "json_converter_layer" {
-#   program = ["${path.module}/scripts/layer_library_create.sh", "3.14"]
-# }
-
-resource "terraform_data" "create_python_package" {
-  triggers_replace = filebase64sha256("${path.module}/scripts/requirements.txt")
-
-  provisioner "local-exec" {
-    command = "${path.module}/scripts/layer_library_create.sh 3.14"
-  }
+data "external" "create_python_package" {
+  program = ["${path.module}/scripts/layer_library_create.sh", "3.14"]
 }
 
 data "archive_file" "json_converter_lambda_layer" {
-  depends_on = [
-    terraform_data.create_python_package
-  ]
-
   type        = "zip"
-  source_dir  = "${path.module}/build/layer/"
+  source_dir  = "${path.module}/${data.external.create_python_package.result.path}"
   output_path = "${path.module}/asset/json_converter_lambda_layer.zip"
 }
 

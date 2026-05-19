@@ -8,9 +8,8 @@ resource "aws_lambda_layer_version" "json_converter" {
   compatible_architectures = ["x86_64"]
   filename                 = data.archive_file.json_converter_lambda_layer.output_path
   source_code_hash         = data.archive_file.json_converter_lambda_layer.output_base64sha256
-  skip_destroy             = true
+  skip_destroy             = false
 }
-
 
 /************************************************************
 Function

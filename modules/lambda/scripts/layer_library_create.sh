@@ -66,7 +66,5 @@ find "${BUILD_DIR}" \
   \( -name "__pycache__" -o -name "*.pyc" -o -name "*.pyo" \) \
   -delete
 
-# PWD=$(pwd)
-
 # Return JSON for Terraform
-# jq -n --arg path "${PWD}" '{"path":$path}'
+jq -n --arg path "build/layer/" '{"path":$path}'
