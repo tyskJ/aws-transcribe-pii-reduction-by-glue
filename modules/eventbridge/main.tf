@@ -44,11 +44,7 @@ resource "aws_cloudwatch_event_target" "transcribe_src_bucket_put_event_sf" {
   "transcribe_src_bucket": <src_bucket>,
   "transcribe_dst_bucket": "${var.transcribe_dst_bucket_name}",
   "glue_src_bucket": "${var.glue_src_bucket_name}",
-  "object_key": <object_key>,
-  "translate_role_arn": "${var.translate_role_arn}",
-  "translate_md_bucket": "${var.translate_md_bucket_name}",
-  "translate_en_bucket": "${var.translate_en_bucket_name}",
-  "translate_jp_bucket": "${var.translate_jp_bucket_name}"
+  "object_key": <object_key>
 }
     EOF
   }
