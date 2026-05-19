@@ -85,4 +85,5 @@ module "eventbridge" {
   sf_arn                     = module.step_functions.arn_sf
   eventbridge_rule_role_arn  = module.iam.arn_eventbridge_rule_role
   glue_databrew_role_arn     = module.iam.arn_glue_databrew_role
+  glue_databrew_recipe_name  = "my-recipe"
 }

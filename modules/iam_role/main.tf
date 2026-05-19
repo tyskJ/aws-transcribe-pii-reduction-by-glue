@@ -29,6 +29,7 @@ resource "aws_iam_role_policy_attachment" "step_functions" {
     s3                     = aws_iam_policy.s3_ops_for_sf.arn
     lambda                 = aws_iam_policy.lambda_ops_for_sf.arn
     iam                    = aws_iam_policy.iam_ops_for_sf.arn
+    glue_databrew          = aws_iam_policy.glue_databrew_ops_for_sf.arn
   }
   role       = aws_iam_role.step_functions.name
   policy_arn = each.value

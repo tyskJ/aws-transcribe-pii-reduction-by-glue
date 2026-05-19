@@ -372,3 +372,28 @@ resource "aws_iam_policy" "iam_ops_for_sf" {
     ]
   })
 }
+
+/************************************************************
+Glue DataBrew Operation Policy
+************************************************************/
+resource "aws_iam_policy" "glue_databrew_ops_for_sf" {
+  name = "iam-policy-glue-databrew-ops-for-sf"
+  tags = {
+    Name = "iam-policy-glue-databrew-ops-for-sf"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowGlueDataBrewOps"
+        Effect = "Allow"
+        Action = [
+          "databrew:CreateDataset"
+        ],
+        Resource = [
+          "*"
+        ]
+      }
+    ]
+  })
+}

@@ -11,13 +11,14 @@
         "glueSrcBucket": "{% $states.input.glue_src_bucket %}",
         "glueDstBucket": "{% $states.input.glue_dst_bucket %}",
         "glueRoleArn": "{% $states.input.glue_role_arn %}",
+        "glueRecipeName": "{% $states.input.glue_recipe_name %}",
         "objectKey": "{% $states.input.object_key %}"
       }
     },
     "StartTranscriptionJob": {
       "Type": "Task",
       "Arguments": {
-        "TranscriptionJobName": "{% $objectKey & '-convert-job-' & $states.context.Execution.Name %}",
+        "TranscriptionJobName": "{% $replace($replace($split($objectKey, '/')[-1],/[^A-Za-z0-9._-]+/,'-'),/^-+|-+$/,'') & '-convert-job-' & $states.context.Execution.Name %}",
         "IdentifyLanguage": false,
         "IdentifyMultipleLanguages": false,
         "LanguageCode": "ja-JP",
@@ -107,7 +108,7 @@
           "JitterStrategy": "FULL"
         }
       ],
-      "Next": "Success",
+      "Next": "CreateDataset",
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
@@ -115,18 +116,50 @@
         }
       ]
     },
+    "CreateDataset": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $replace($replace($replace($split($objectKey, '/')[-1],/\\.[^.]+$/,''),/[^A-Za-z0-9.-]+/,'-'),/^-+|-+$/,'') & '-dataset' %}",
+        "Input": {
+          "S3InputDefinition": {
+            "Bucket": "{% $glueSrcBucket %}",
+            "Key": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
+          }
+        },
+        "Format": "EXCEL",
+        "FormatOptions": {
+          "Excel": {
+            "HeaderRow": true,
+            "SheetIndexes": [0]
+          }
+        }
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:createDataset",
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "CreateDatasetFailed"
+        }
+      ],
+      "Assign": {
+        "datasetName": "{% $states.result.Name %}"
+      }
+    },
+    "CreateDatasetFailed": {
+      "Type": "Fail",
+      "Error": "CreateDatasetException"
+    },
     "ConverterFailed": {
       "Type": "Fail",
-      "Error": "ConverterFailedException",
-      "Cause": "Converter failed"
+      "Error": "ConverterFailedException"
     },
     "Success": {
       "Type": "Succeed"
     },
     "TranscriptionJobFailed": {
       "Type": "Fail",
-      "Error": "TranscriptionJobFailedException",
-      "Cause": "Transcription job failed"
+      "Error": "TranscriptionJobFailedException"
     }
   },
   "QueryLanguage": "JSONata"

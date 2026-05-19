@@ -25,3 +25,7 @@ variable "eventbridge_rule_role_arn" {
 variable "glue_databrew_role_arn" {
   type = string
 }
+
+variable "glue_databrew_recipe_name" {
+  type = string
+}
