@@ -171,7 +171,8 @@ resource "aws_iam_policy" "s3_ops_for_lambda" {
           "s3:PutObject"
         ],
         Resource = [
-          "${var.transcribe_src_bucket_arn}/*"
+          "${var.transcribe_src_bucket_arn}/*",
+          "${var.glue_src_bucket_arn}/*"
         ]
       }
     ]
