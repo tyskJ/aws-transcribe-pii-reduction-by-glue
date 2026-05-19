@@ -1,0 +1,34 @@
+[
+  {
+    "Action": {
+      "Operation": "MASK_RANGE",
+      "Parameters": {
+        "alphabet": "[\"WHITESPACE\",\"SYMBOLS\"]",
+        "entityTypeFilter": "[\"PERSON_NAME\",\"EMAIL\",\"DATE\",\"CREDIT_CARD\"]",
+        "maskMode": "MASK_ENTIRE",
+        "maskSymbol": "#",
+        "sourceColumns": "[\"text_en\"]"
+      }
+    }
+  },
+  {
+    "Action": {
+      "Operation": "REPLACE_PATTERN",
+      "Parameters": {
+        "pattern": "0[\\d\\-\\sのノー]{8,}",
+        "sourceColumn": "text_en",
+        "value": "[PHONE]"
+      }
+    }
+  },
+  {
+    "Action": {
+      "Operation": "REPLACE_PATTERN",
+      "Parameters": {
+        "pattern": "(?<!\\w)(at|@)\\s*[a-zA-Z0-9.-]+\\s*\\.\\s*[a-zA-Z]{2,}\\b",
+        "sourceColumn": "text_en",
+        "value": "[EMAIL]"
+      }
+    }
+  }
+]

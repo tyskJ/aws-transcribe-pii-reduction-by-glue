@@ -42,6 +42,26 @@ module "lambda" {
 }
 
 /************************************************************
+Glue Databrew
+************************************************************/
+### Terraform 未対応のためCLIで実施
+### hashicorp/awscc プロバイダーで対応しているがレシピは対応していない
+resource "terraform_data" "create_databrew_recipe" {
+  provisioner "local-exec" {
+    command = <<EOT
+      aws databrew create-recipe \
+      --name "my-recipe" \
+      --steps file://config/steps.json \
+      --profile admin
+
+      aws databrew publish-recipe \
+      --name "my-recipe" \
+      --profile admin
+    EOT
+  }
+}
+
+/************************************************************
 Step Functions
 ************************************************************/
 module "step_functions" {
