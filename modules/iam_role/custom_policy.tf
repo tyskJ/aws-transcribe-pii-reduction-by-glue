@@ -203,7 +203,8 @@ resource "aws_iam_policy" "s3_ops_for_translate" {
           "s3:ListBucket"
         ],
         Resource = [
-          "${var.translate_md_bucket_arn}"
+          "${var.translate_md_bucket_arn}",
+          "${var.translate_en_bucket_arn}"
         ]
       },
       {
@@ -213,7 +214,8 @@ resource "aws_iam_policy" "s3_ops_for_translate" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.translate_md_bucket_arn}/*"
+          "${var.translate_md_bucket_arn}/*",
+          "${var.translate_en_bucket_arn}/*"
         ]
       },
       {
