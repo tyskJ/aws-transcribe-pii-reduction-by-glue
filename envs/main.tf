@@ -19,8 +19,6 @@ module "iam" {
   account_id                = local.account_id
   transcribe_src_bucket_arn = module.s3.arn_transcribe_src_bucket
   transcribe_dst_bucket_arn = module.s3.arn_transcribe_dst_bucket
-  translate_md_bucket_arn   = module.s3.arn_translate_md_bucket
-  translate_en_bucket_arn   = module.s3.arn_translate_en_bucket
   glue_src_bucket_arn       = module.s3.arn_glue_src_bucket
 }
 
@@ -64,8 +62,4 @@ module "eventbridge" {
   glue_src_bucket_name       = module.s3.name_glue_src_bucket
   sf_arn                     = module.step_functions.arn_sf
   eventbridge_rule_role_arn  = module.iam.arn_eventbridge_rule_role
-  translate_role_arn         = module.iam.arn_translate_role
-  translate_md_bucket_name   = module.s3.name_translate_md_bucket
-  translate_en_bucket_name   = module.s3.name_translate_en_bucket
-  translate_jp_bucket_name   = module.s3.name_translate_jp_bucket
 }
