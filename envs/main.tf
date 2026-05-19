@@ -63,4 +63,7 @@ module "lambda" {
 #   glue_src_bucket_name       = module.s3.name_glue_src_bucket
 #   sf_arn                     = module.step_functions.arn_sf
 #   eventbridge_rule_role_arn  = module.iam.arn_eventbridge_rule_role
+#   translate_role_arn         = module.iam.arn_translate_role
+#   translate_en_bucket_name   = module.s3.name_translate_en_bucket
+#   translate_jp_bucket_name   = module.s3.name_translate_jp_bucket
 # }

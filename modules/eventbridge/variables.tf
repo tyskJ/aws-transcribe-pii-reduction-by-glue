@@ -17,3 +17,15 @@ variable "sf_arn" {
 variable "eventbridge_rule_role_arn" {
   type = string
 }
+
+variable "translate_role_arn" {
+  type = string
+}
+
+variable "translate_en_bucket_name" {
+  type = string
+}
+
+variable "translate_jp_bucket_name" {
+  type = string
+}
