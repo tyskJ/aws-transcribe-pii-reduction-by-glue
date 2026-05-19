@@ -26,9 +26,7 @@
         "OutputBucketName": "{% $transcribeDstBucket %}",
         "OutputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
         "Subtitles": {
-          "Formats": [
-            "vtt"
-          ],
+          "Formats": ["vtt"],
           "OutputStartIndex": 0
         },
         "Settings": {
@@ -42,9 +40,7 @@
       "Comment": "Execute text conversion",
       "Catch": [
         {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
+          "ErrorEquals": ["States.ALL"],
           "Next": "TranscriptionJobFailed"
         }
       ]
@@ -63,9 +59,7 @@
       "Next": "Choice",
       "Catch": [
         {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
+          "ErrorEquals": ["States.ALL"],
           "Next": "TranscriptionJobFailed"
         }
       ]
@@ -94,7 +88,7 @@
           "inputBucket": "{% $transcribeDstBucket %}",
           "inputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
           "outputBucket": "{% $glueSrcBucket %}",
-          "outputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.csv' %}"
+          "outputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
         }
       },
       "Retry": [
@@ -114,9 +108,7 @@
       "Next": "Success",
       "Catch": [
         {
-          "ErrorEquals": [
-            "States.ALL"
-          ],
+          "ErrorEquals": ["States.ALL"],
           "Next": "ConverterFailed"
         }
       ]
