@@ -1,26 +1,32 @@
 """
 - Transcribe出力をExcel形式(.xlsx)に成形
-- エラーハンドリングは Step Functions 側に任せる
+- Lambda内でTranslate（SDK）実行
+- エラーハンドリングなし（Step Functions側）
 """
 
+import sys
+import os
+
+# ローカルだけ path 追加
+if not os.getenv("AWS_EXECUTION_ENV"):
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), "vendor"))
+
 import json
-import boto3
 from io import BytesIO
 from pathlib import Path
 from typing import Dict, Any, List
+import boto3
 from openpyxl import Workbook
 
 """
 共通ロジック
 """
-def transcribe_json_to_rows(data: Dict[str, Any]) -> List[List[Any]]:
+def transcribe_json_to_rows(data: Dict[str, Any], translate_client) -> List[List[Any]]:
     """
-    Amazon Transcribe JSON → 行データ
+    Transcribe JSON → 行データ + 英語変換
     """
 
     rows = []
-
-    """ Transcribe の speaker 分離結果は audio_segments に入っている """
     audio_segments = data.get("results", {}).get("audio_segments", [])
 
     for seg in audio_segments:
@@ -28,11 +34,19 @@ def transcribe_json_to_rows(data: Dict[str, Any]) -> List[List[Any]]:
         if not text:
             continue
 
+        # --- Translate（同期） ---
+        translated_text = translate_client.translate_text(
+            Text=text,
+            SourceLanguageCode="ja",
+            TargetLanguageCode="en"
+        )["TranslatedText"]
+
         rows.append([
-            float(seg["start_time"]),          # 発話開始時間
-            float(seg["end_time"]),            # 発話終了時間
-            seg.get("speaker_label"),          # spk_0 / spk_1 / spk_2 ...
-            text                               # 発話内容
+            float(seg["start_time"]),
+            float(seg["end_time"]),
+            seg.get("speaker_label"),
+            text,              # 元日本語
+            translated_text    # 英語
         ])
 
     return rows
@@ -40,22 +54,21 @@ def transcribe_json_to_rows(data: Dict[str, Any]) -> List[List[Any]]:
 
 def rows_to_excel_bytes(rows: List[List[Any]]) -> bytes:
     """
-    行データ → Excel（バイト列）
+    行データ → Excel
     """
 
     wb = Workbook()
     ws = wb.active
     ws.title = "transcribe"
 
-    # ヘッダ
     ws.append([
         "start_time",
         "end_time",
         "speaker_label",
-        "text"
+        "text",
+        "text_en"
     ])
 
-    # データ
     for row in rows:
         ws.append(row)
 
@@ -64,9 +77,8 @@ def rows_to_excel_bytes(rows: List[List[Any]]) -> bytes:
 
     return buffer.getvalue()
 
-
 """
-Lambda handler
+Lambda Handler
 """
 def lambda_handler(event, context):
     """
@@ -81,30 +93,24 @@ def lambda_handler(event, context):
     }
     """
 
-    """
-    入力取得（S3 → JSON）
-    """
     input_bucket = event["inputBucket"]
     input_key = event["inputKey"]
 
-    s3 = boto3.client("s3")
+    output_bucket = event["outputBucket"]
+    output_key = event["outputKey"]
 
-    """ Transcribe JSON取得 """
+    s3 = boto3.client("s3")
+    translate = boto3.client("translate")
+
+    """ JSON取得 """
     obj = s3.get_object(Bucket=input_bucket, Key=input_key)
     transcribe_json = json.loads(obj["Body"].read().decode("utf-8"))
 
-    """
-    変換処理
-    """
-    rows = transcribe_json_to_rows(transcribe_json)
+    """ 変換（Translate込み） """
+    rows = transcribe_json_to_rows(transcribe_json, translate)
     excel_bytes = rows_to_excel_bytes(rows)
 
-    """
-    出力（EXCEL → 別バケットへ）
-    """
-    output_bucket = event["outputBucket"]
-    output_key = event["outputKey"]  # 必ず .xlsx にする
-
+    """ 出力 """
     s3.put_object(
         Bucket=output_bucket,
         Key=output_key,
@@ -122,11 +128,9 @@ def lambda_handler(event, context):
     }
 
 """
-ローカル実行用
+ローカル実行
 """
 if __name__ == "__main__":
-
-    import sys
 
     if len(sys.argv) != 3:
         print("Usage: python transcribe_json_to_excel.py input.json output.xlsx")
@@ -135,14 +139,14 @@ if __name__ == "__main__":
     input_json_path = Path(sys.argv[1])
     output_excel_path = Path(sys.argv[2])
 
-    # --- JSON読込 ---
+    session = boto3.Session(profile_name="admin")
+    translate = session.client("translate", region_name="ap-northeast-1")
+
     with input_json_path.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
-    # --- 変換 ---
-    rows = transcribe_json_to_rows(data)
+    rows = transcribe_json_to_rows(data, translate)
 
-    # --- Excel出力 ---
     wb = Workbook()
     ws = wb.active
 
@@ -150,7 +154,8 @@ if __name__ == "__main__":
         "start_time",
         "end_time",
         "speaker_label",
-        "text"
+        "text",
+        "text_en"
     ])
 
     for row in rows:
