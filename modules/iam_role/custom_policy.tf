@@ -198,13 +198,24 @@ resource "aws_iam_policy" "s3_ops_for_glue_databrew" {
         ]
       },
       {
-        Sid    = "AllowWiteOfInsideSpecificBucket"
+        Sid    = "AllowGetOfInsideSpecificBucket"
         Effect = "Allow"
         Action = [
           "s3:GetObject"
         ],
         Resource = [
           "${var.glue_src_bucket_arn}/*"
+        ]
+      },
+      {
+        Sid    = "AllowWriteOfInsideSpecificBucket"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          "${var.glue_dst_bucket_arn}/*"
         ]
       }
     ]

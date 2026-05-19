@@ -20,6 +20,7 @@ module "iam" {
   transcribe_src_bucket_arn = module.s3.arn_transcribe_src_bucket
   transcribe_dst_bucket_arn = module.s3.arn_transcribe_dst_bucket
   glue_src_bucket_arn       = module.s3.arn_glue_src_bucket
+  glue_dst_bucket_arn       = module.s3.arn_glue_dst_bucket
 }
 
 /************************************************************

@@ -21,3 +21,7 @@ variable "transcribe_dst_bucket_arn" {
 variable "glue_src_bucket_arn" {
   type = string
 }
+
+variable "glue_dst_bucket_arn" {
+  type = string
+}
