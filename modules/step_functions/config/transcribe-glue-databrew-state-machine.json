@@ -9,6 +9,8 @@
         "transcribeSrcBucket": "{% $states.input.transcribe_src_bucket %}",
         "transcribeDstBucket": "{% $states.input.transcribe_dst_bucket %}",
         "glueSrcBucket": "{% $states.input.glue_src_bucket %}",
+        "glueDstBucket": "{% $states.input.glue_dst_bucket %}",
+        "glueRoleArn": "{% $states.input.glue_role_arn %}",
         "objectKey": "{% $states.input.object_key %}"
       }
     },
