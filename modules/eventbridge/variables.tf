@@ -29,3 +29,7 @@ variable "glue_databrew_role_arn" {
 variable "glue_databrew_recipe_name" {
   type = string
 }
+
+variable "glue_databrew_recipe_version" {
+  type = string
+}

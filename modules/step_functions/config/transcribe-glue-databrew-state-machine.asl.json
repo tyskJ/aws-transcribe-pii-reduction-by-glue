@@ -12,6 +12,7 @@
         "glueDstBucket": "{% $states.input.glue_dst_bucket %}",
         "glueRoleArn": "{% $states.input.glue_role_arn %}",
         "glueRecipeName": "{% $states.input.glue_recipe_name %}",
+        "glueRecipeVersion": "{% $states.input.glue_recipe_version %}",
         "objectKey": "{% $states.input.object_key %}"
       }
     },
@@ -46,7 +47,10 @@
           "ErrorEquals": ["States.ALL"],
           "Next": "TranscriptionJobFailed"
         }
-      ]
+      ],
+      "Assign": {
+        "transcribeJobName": "{% $states.result.TranscriptionJob.TranscriptionJobName %}"
+      }
     },
     "Wait5Sec": {
       "Type": "Wait",
@@ -71,7 +75,7 @@
       "Type": "Choice",
       "Choices": [
         {
-          "Next": "ConverterLambdaInvoke",
+          "Next": "DeleteTranscriptionJob",
           "Condition": "{% $states.input.TranscriptionJob.TranscriptionJobStatus = 'COMPLETED' %}"
         },
         {
@@ -80,6 +84,14 @@
         }
       ],
       "Default": "Wait5Sec"
+    },
+    "DeleteTranscriptionJob": {
+      "Type": "Task",
+      "Arguments": {
+        "TranscriptionJobName": "{% $transcribeJobName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:transcribe:deleteTranscriptionJob",
+      "Next": "ConverterLambdaInvoke"
     },
     "ConverterLambdaInvoke": {
       "Type": "Task",
@@ -135,7 +147,7 @@
         }
       },
       "Resource": "arn:aws:states:::aws-sdk:databrew:createDataset",
-      "Next": "Success",
+      "Next": "CreateRecipeJob",
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
@@ -145,6 +157,49 @@
       "Assign": {
         "datasetName": "{% $states.result.Name %}"
       }
+    },
+    "CreateRecipeJob": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $datasetName & '-recipejob' %}",
+        "RoleArn": "{% $glueRoleArn %}",
+        "DatasetName": "{% $datasetName %}",
+        "RecipeReference": {
+          "Name": "{% $glueRecipeName %}",
+          "RecipeVersion": "{% $glueRecipeVersion %}"
+        },
+        "Outputs": [
+          {
+            "Location": {
+              "Bucket": "{% $glueDstBucket %}",
+              "Key": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.csv' %}"
+            },
+            "Format": "CSV",
+            "Overwrite": true,
+            "MaxOutputFiles": 1
+          }
+        ]
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:createRecipeJob",
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "DeleteDatasetCauseFailedCreateRecipeJob"
+        }
+      ]
+    },
+    "DeleteDatasetCauseFailedCreateRecipeJob": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $datasetName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:deleteDataset",
+      "Next": "CreateRecipeJobFailed"
+    },
+    "CreateRecipeJobFailed": {
+      "Type": "Fail",
+      "Error": "CreateRecipeJobException"
     },
     "CreateDatasetFailed": {
       "Type": "Fail",

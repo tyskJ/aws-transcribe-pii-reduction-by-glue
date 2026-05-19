@@ -83,6 +83,16 @@ resource "aws_iam_policy" "transcribe_ops_for_sf" {
         Resource = [
           "arn:${var.partition}:transcribe:${var.region}:${var.account_id}:transcription-job/*"
         ]
+      },
+      {
+        Sid    = "AllowDeleteTranscribeJob"
+        Effect = "Allow"
+        Action = [
+          "transcribe:DeleteTranscriptionJob"
+        ],
+        Resource = [
+          "arn:${var.partition}:transcribe:${var.region}:${var.account_id}:transcription-job/*"
+        ]
       }
     ]
   })
@@ -388,7 +398,9 @@ resource "aws_iam_policy" "glue_databrew_ops_for_sf" {
         Sid    = "AllowGlueDataBrewOps"
         Effect = "Allow"
         Action = [
-          "databrew:CreateDataset"
+          "databrew:CreateDataset",
+          "databrew:CreateRecipeJob",
+          "databrew:DeleteDataset"
         ],
         Resource = [
           "*"
