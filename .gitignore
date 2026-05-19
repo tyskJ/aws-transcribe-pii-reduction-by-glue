@@ -46,3 +46,6 @@ tmp.tf
 event.json
 response.json
 **/build
+**/vendor
+*.xlsx
+**/asset/*.json
