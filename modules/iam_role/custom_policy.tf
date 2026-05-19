@@ -89,6 +89,29 @@ resource "aws_iam_policy" "transcribe_ops_for_sf" {
 }
 
 /************************************************************
+Translate Operation Policy
+************************************************************/
+resource "aws_iam_policy" "translate_ops_for_lambda" {
+  name = "iam-policy-transcribe-ops-for-lambda"
+  tags = {
+    Name = "iam-policy-transcribe-ops-for-lambda"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowStartTranslateText"
+        Effect = "Allow"
+        Action = [
+          "translate:TranslateText"
+        ],
+        Resource = ["*"]
+      }
+    ]
+  })
+}
+
+/************************************************************
 S3 Operation Policy
 ************************************************************/
 resource "aws_iam_policy" "s3_ops_for_sf" {

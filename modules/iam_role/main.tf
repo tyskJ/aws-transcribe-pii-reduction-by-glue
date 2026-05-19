@@ -93,9 +93,10 @@ resource "aws_iam_role" "lambda" {
 
 resource "aws_iam_role_policy_attachment" "lambda" {
   for_each = {
-    cwlogs = "arn:${var.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    s3     = aws_iam_policy.s3_ops_for_lambda.arn
-    polly  = aws_iam_policy.polly_ops_for_lambda.arn
+    cwlogs    = "arn:${var.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+    s3        = aws_iam_policy.s3_ops_for_lambda.arn
+    polly     = aws_iam_policy.polly_ops_for_lambda.arn
+    translate = aws_iam_policy.translate_ops_for_lambda.arn
   }
   role       = aws_iam_role.lambda.name
   policy_arn = each.value
