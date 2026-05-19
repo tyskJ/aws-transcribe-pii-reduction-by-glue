@@ -28,6 +28,7 @@ resource "aws_iam_role_policy_attachment" "step_functions" {
     transcribe             = aws_iam_policy.transcribe_ops.arn
     s3                     = aws_iam_policy.s3_ops.arn
     lambda                 = aws_iam_policy.lambda_ops.arn
+    iam                    = aws_iam_policy.iam_ops_for_sf.arn
   }
   role       = aws_iam_role.step_functions.name
   policy_arn = each.value
@@ -60,6 +61,7 @@ resource "aws_iam_role" "eventbridge_rule" {
 resource "aws_iam_role_policy_attachment" "eventbridge_rule" {
   for_each = {
     sf_statemachine = aws_iam_policy.sf_statemachine_ops.arn
+    iam             = aws_iam_policy.iam_ops_for_eventbridge_rule.arn
   }
   role       = aws_iam_role.eventbridge_rule.name
   policy_arn = each.value

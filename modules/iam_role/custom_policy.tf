@@ -248,3 +248,60 @@ resource "aws_iam_policy" "polly_ops" {
     ]
   })
 }
+
+/************************************************************
+IAM Operation Policy
+************************************************************/
+resource "aws_iam_policy" "iam_ops_for_eventbridge_rule" {
+  name = "iam-policy-iam-ops-for-eventbridge-rule"
+  tags = {
+    Name = "iam-policy-iam-ops-for-eventbridge-rule"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowPassRole"
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ],
+        Resource = [
+          "*"
+        ],
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" : "states.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "iam_ops_for_sf" {
+  name = "iam-policy-iam-ops-for-sf"
+  tags = {
+    Name = "iam-policy-iam-ops-for-sf"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowPassRole"
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ],
+        Resource = [
+          "*"
+        ],
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" : "translate.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
