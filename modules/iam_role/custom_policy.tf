@@ -1,10 +1,10 @@
 /************************************************************
 CloudWatch Vended Logs Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "cwlogs_vended_delivery" {
-  name = "iam-policy-cwlogs-vended-delivery"
+resource "aws_iam_policy" "cwlogs_vended_delivery_for_sf" {
+  name = "iam-policy-cwlogs-vended-delivery-for-sf"
   tags = {
-    Name = "iam-policy-cwlogs-vended-delivery"
+    Name = "iam-policy-cwlogs-vended-delivery-for-sf"
   }
   policy = jsonencode({
     Version = "2012-10-17",
@@ -33,10 +33,10 @@ resource "aws_iam_policy" "cwlogs_vended_delivery" {
 /************************************************************
 Step Functions State Machine Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "sf_statemachine_ops" {
-  name = "iam-policy-sf-statemachine-ops"
+resource "aws_iam_policy" "sf_statemachine_ops_for_eventbridge_rule" {
+  name = "iam-policy-sf-statemachine-ops-for-eventbridge-rule"
   tags = {
-    Name = "iam-policy-sf-statemachine-ops"
+    Name = "iam-policy-sf-statemachine-ops-for-eventbridge-rule"
   }
   policy = jsonencode({
     Version = "2012-10-17",
@@ -58,10 +58,10 @@ resource "aws_iam_policy" "sf_statemachine_ops" {
 /************************************************************
 Transcribe Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "transcribe_ops" {
-  name = "iam-policy-transcribe-ops"
+resource "aws_iam_policy" "transcribe_ops_for_sf" {
+  name = "iam-policy-transcribe-ops-for-sf"
   tags = {
-    Name = "iam-policy-transcribe-ops"
+    Name = "iam-policy-transcribe-ops-for-sf"
   }
   policy = jsonencode({
     Version = "2012-10-17",
@@ -91,10 +91,10 @@ resource "aws_iam_policy" "transcribe_ops" {
 /************************************************************
 S3 Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "s3_ops" {
-  name = "iam-policy-s3-ops"
+resource "aws_iam_policy" "s3_ops_for_sf" {
+  name = "iam-policy-s3-ops-for-sf"
   tags = {
-    Name = "iam-policy-s3-ops"
+    Name = "iam-policy-s3-ops-for-sf"
   }
   policy = jsonencode({
     Version = "2012-10-17",
@@ -106,7 +106,38 @@ resource "aws_iam_policy" "s3_ops" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.transcribe_src_bucket_arn}/*",
+          "${var.transcribe_src_bucket_arn}/*"
+        ]
+      },
+      {
+        Sid    = "AllowPutObject"
+        Effect = "Allow"
+        Action = [
+          "s3:PutObject"
+        ],
+        Resource = [
+          "${var.transcribe_dst_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy" "s3_ops_for_lambda" {
+  name = "iam-policy-s3-ops-for-lambda"
+  tags = {
+    Name = "iam-policy-s3-ops-for-lambda"
+  }
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowGetObject"
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject"
+        ],
+        Resource = [
           "${var.transcribe_dst_bucket_arn}/*"
         ]
       },
@@ -117,15 +148,15 @@ resource "aws_iam_policy" "s3_ops" {
           "s3:PutObject"
         ],
         Resource = [
-          "${var.transcribe_dst_bucket_arn}/*",
-          "${var.glue_src_bucket_arn}/*"
+          "${var.transcribe_src_bucket_arn}/*",
+          "${var.translate_md_bucket_arn}/*"
         ]
       }
     ]
   })
 }
 
-resource "aws_iam_policy" "glue_databrew_s3_ops" {
+resource "aws_iam_policy" "s3_ops_for_glue_databrew" {
   name = "iam-policy-s3-ops-for-glue-databrew"
   tags = {
     Name = "iam-policy-s3-ops-for-glue-databrew"
@@ -157,7 +188,7 @@ resource "aws_iam_policy" "glue_databrew_s3_ops" {
   })
 }
 
-resource "aws_iam_policy" "translate_s3_ops" {
+resource "aws_iam_policy" "s3_ops_for_translate" {
   name = "iam-policy-s3-ops-for-translate"
   tags = {
     Name = "iam-policy-s3-ops-for-translate"
@@ -172,7 +203,7 @@ resource "aws_iam_policy" "translate_s3_ops" {
           "s3:ListBucket"
         ],
         Resource = [
-          "${var.transcribe_dst_bucket_arn}"
+          "${var.translate_md_bucket_arn}"
         ]
       },
       {
@@ -182,7 +213,7 @@ resource "aws_iam_policy" "translate_s3_ops" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.transcribe_dst_bucket_arn}/*"
+          "${var.translate_md_bucket_arn}/*"
         ]
       },
       {
@@ -202,10 +233,10 @@ resource "aws_iam_policy" "translate_s3_ops" {
 /************************************************************
 Lambda Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "lambda_ops" {
-  name = "iam-policy-lambda-ops"
+resource "aws_iam_policy" "lambda_ops_for_sf" {
+  name = "iam-policy-lambda-ops-for-sf"
   tags = {
-    Name = "iam-policy-lambda-ops"
+    Name = "iam-policy-lambda-ops-for-sf"
   }
   policy = jsonencode({
     Version = "2012-10-17",
@@ -227,10 +258,10 @@ resource "aws_iam_policy" "lambda_ops" {
 /************************************************************
 Polly Operation Policy
 ************************************************************/
-resource "aws_iam_policy" "polly_ops" {
-  name = "iam-policy-polly-ops"
+resource "aws_iam_policy" "polly_ops_for_lambda" {
+  name = "iam-policy-polly-ops-for-lambda"
   tags = {
-    Name = "iam-policy-polly-ops"
+    Name = "iam-policy-polly-ops-for-lambda"
   }
   policy = jsonencode({
     Version = "2012-10-17",

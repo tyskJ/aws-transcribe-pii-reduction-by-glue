@@ -24,10 +24,10 @@ resource "aws_iam_role" "step_functions" {
 
 resource "aws_iam_role_policy_attachment" "step_functions" {
   for_each = {
-    cwlogs_vended_delivery = aws_iam_policy.cwlogs_vended_delivery.arn
-    transcribe             = aws_iam_policy.transcribe_ops.arn
-    s3                     = aws_iam_policy.s3_ops.arn
-    lambda                 = aws_iam_policy.lambda_ops.arn
+    cwlogs_vended_delivery = aws_iam_policy.cwlogs_vended_delivery_for_sf.arn
+    transcribe             = aws_iam_policy.transcribe_ops_for_sf.arn
+    s3                     = aws_iam_policy.s3_ops_for_sf.arn
+    lambda                 = aws_iam_policy.lambda_ops_for_sf.arn
     iam                    = aws_iam_policy.iam_ops_for_sf.arn
   }
   role       = aws_iam_role.step_functions.name
@@ -60,7 +60,7 @@ resource "aws_iam_role" "eventbridge_rule" {
 
 resource "aws_iam_role_policy_attachment" "eventbridge_rule" {
   for_each = {
-    sf_statemachine = aws_iam_policy.sf_statemachine_ops.arn
+    sf_statemachine = aws_iam_policy.sf_statemachine_ops_for_eventbridge_rule.arn
     iam             = aws_iam_policy.iam_ops_for_eventbridge_rule.arn
   }
   role       = aws_iam_role.eventbridge_rule.name
@@ -94,8 +94,8 @@ resource "aws_iam_role" "lambda" {
 resource "aws_iam_role_policy_attachment" "lambda" {
   for_each = {
     cwlogs = "arn:${var.partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    s3     = aws_iam_policy.s3_ops.arn
-    polly  = aws_iam_policy.polly_ops.arn
+    s3     = aws_iam_policy.s3_ops_for_lambda.arn
+    polly  = aws_iam_policy.polly_ops_for_lambda.arn
   }
   role       = aws_iam_role.lambda.name
   policy_arn = each.value
@@ -127,7 +127,7 @@ resource "aws_iam_role" "translate" {
 
 resource "aws_iam_role_policy_attachment" "translate" {
   for_each = {
-    translate_s3_ops = aws_iam_policy.translate_s3_ops.arn
+    translate_s3_ops = aws_iam_policy.s3_ops_for_translate.arn
   }
   role       = aws_iam_role.translate.name
   policy_arn = each.value
@@ -160,7 +160,7 @@ resource "aws_iam_role" "glue_databrew" {
 resource "aws_iam_role_policy_attachment" "glue_databrew" {
   for_each = {
     databrew             = "arn:${var.partition}:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
-    glue_databrew_s3_ops = aws_iam_policy.glue_databrew_s3_ops.arn
+    glue_databrew_s3_ops = aws_iam_policy.s3_ops_for_glue_databrew.arn
   }
   role       = aws_iam_role.glue_databrew.name
   policy_arn = each.value
