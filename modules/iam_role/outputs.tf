@@ -9,3 +9,7 @@ output "arn_eventbridge_rule_role" {
 output "arn_lambda" {
   value = aws_iam_role.lambda.arn
 }
+
+output "arn_glue_databrew_role" {
+  value = aws_iam_role.glue_databrew.arn
+}

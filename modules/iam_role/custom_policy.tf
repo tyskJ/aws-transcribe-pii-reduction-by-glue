@@ -365,7 +365,7 @@ resource "aws_iam_policy" "iam_ops_for_sf" {
         ],
         Condition = {
           StringEquals = {
-            "iam:PassedToService" : "translate.amazonaws.com"
+            "iam:PassedToService" : "databrew.amazonaws.com"
           }
         }
       }
