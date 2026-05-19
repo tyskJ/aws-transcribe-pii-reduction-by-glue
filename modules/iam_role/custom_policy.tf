@@ -215,7 +215,8 @@ resource "aws_iam_policy" "s3_ops_for_glue_databrew" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.glue_src_bucket_arn}/*"
+          "${var.glue_src_bucket_arn}/*",
+          "${var.glue_dst_bucket_arn}/*"
         ]
       },
       {

@@ -172,7 +172,7 @@
           {
             "Location": {
               "Bucket": "{% $glueDstBucket %}",
-              "Key": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.csv' %}"
+              "Key": "{% $objectKey %}"
             },
             "Format": "CSV",
             "Overwrite": true,
