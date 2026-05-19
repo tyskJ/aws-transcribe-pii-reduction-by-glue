@@ -1,9 +1,16 @@
+/************************************************************
+Bucket Name
+************************************************************/
 output "name_transcribe_src_bucket" {
   value = aws_s3_bucket.transcribe_src.id
 }
 
 output "name_transcribe_dst_bucket" {
   value = aws_s3_bucket.transcribe_dst.id
+}
+
+output "name_translate_md_bucket" {
+  value = aws_s3_bucket.translate_md.id
 }
 
 output "name_translate_en_bucket" {
@@ -18,8 +25,19 @@ output "name_glue_src_bucket" {
   value = aws_s3_bucket.glue_src.id
 }
 
+/************************************************************
+Bucket ARN
+************************************************************/
 output "arn_transcribe_src_bucket" {
   value = aws_s3_bucket.transcribe_src.arn
+}
+
+output "arn_transcribe_dst_bucket" {
+  value = aws_s3_bucket.transcribe_dst.arn
+}
+
+output "arn_translate_md_bucket" {
+  value = aws_s3_bucket.translate_md.arn
 }
 
 output "arn_translate_en_bucket" {
@@ -30,9 +48,6 @@ output "arn_translate_jp_bucket" {
   value = aws_s3_bucket.translate_jp.arn
 }
 
-output "arn_transcribe_dst_bucket" {
-  value = aws_s3_bucket.transcribe_dst.arn
-}
 
 output "arn_glue_src_bucket" {
   value = aws_s3_bucket.glue_src.arn
