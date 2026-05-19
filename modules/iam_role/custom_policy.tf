@@ -171,8 +171,7 @@ resource "aws_iam_policy" "s3_ops_for_lambda" {
           "s3:PutObject"
         ],
         Resource = [
-          "${var.transcribe_src_bucket_arn}/*",
-          "${var.translate_md_bucket_arn}/*"
+          "${var.transcribe_src_bucket_arn}/*"
         ]
       }
     ]
@@ -211,49 +210,49 @@ resource "aws_iam_policy" "s3_ops_for_glue_databrew" {
   })
 }
 
-resource "aws_iam_policy" "s3_ops_for_translate" {
-  name = "iam-policy-s3-ops-for-translate"
-  tags = {
-    Name = "iam-policy-s3-ops-for-translate"
-  }
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid    = "AllowListOfInsideSpecificBucket"
-        Effect = "Allow"
-        Action = [
-          "s3:ListBucket"
-        ],
-        Resource = [
-          "${var.translate_md_bucket_arn}",
-          "${var.translate_en_bucket_arn}"
-        ]
-      },
-      {
-        Sid    = "AllowGetOfInsideSpecificBucket"
-        Effect = "Allow"
-        Action = [
-          "s3:GetObject"
-        ],
-        Resource = [
-          "${var.translate_md_bucket_arn}/*",
-          "${var.translate_en_bucket_arn}/*"
-        ]
-      },
-      {
-        Sid    = "AllowPutOfInsideSpecificBucket"
-        Effect = "Allow"
-        Action = [
-          "s3:PutObject"
-        ],
-        Resource = [
-          "${var.translate_en_bucket_arn}/*"
-        ]
-      }
-    ]
-  })
-}
+# resource "aws_iam_policy" "s3_ops_for_translate" {
+#   name = "iam-policy-s3-ops-for-translate"
+#   tags = {
+#     Name = "iam-policy-s3-ops-for-translate"
+#   }
+#   policy = jsonencode({
+#     Version = "2012-10-17",
+#     Statement = [
+#       {
+#         Sid    = "AllowListOfInsideSpecificBucket"
+#         Effect = "Allow"
+#         Action = [
+#           "s3:ListBucket"
+#         ],
+#         Resource = [
+#           "${var.translate_md_bucket_arn}",
+#           "${var.translate_en_bucket_arn}"
+#         ]
+#       },
+#       {
+#         Sid    = "AllowGetOfInsideSpecificBucket"
+#         Effect = "Allow"
+#         Action = [
+#           "s3:GetObject"
+#         ],
+#         Resource = [
+#           "${var.translate_md_bucket_arn}/*",
+#           "${var.translate_en_bucket_arn}/*"
+#         ]
+#       },
+#       {
+#         Sid    = "AllowPutOfInsideSpecificBucket"
+#         Effect = "Allow"
+#         Action = [
+#           "s3:PutObject"
+#         ],
+#         Resource = [
+#           "${var.translate_en_bucket_arn}/*"
+#         ]
+#       }
+#     ]
+#   })
+# }
 
 /************************************************************
 Lambda Operation Policy

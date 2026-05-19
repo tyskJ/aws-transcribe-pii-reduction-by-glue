@@ -105,34 +105,34 @@ resource "aws_iam_role_policy_attachment" "lambda" {
 /************************************************************
 Translate Role
 ************************************************************/
-resource "aws_iam_role" "translate" {
-  name = "iam-role-translate"
-  tags = {
-    Name = "iam-role-translate"
-  }
-  description = "Allows Translate to call AWS services on your behalf."
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = ""
-        Effect = "Allow"
-        Principal = {
-          Service = "translate.amazonaws.com"
-        }
-        Action = "sts:AssumeRole"
-      }
-    ]
-  })
-}
+# resource "aws_iam_role" "translate" {
+#   name = "iam-role-translate"
+#   tags = {
+#     Name = "iam-role-translate"
+#   }
+#   description = "Allows Translate to call AWS services on your behalf."
+#   assume_role_policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Sid    = ""
+#         Effect = "Allow"
+#         Principal = {
+#           Service = "translate.amazonaws.com"
+#         }
+#         Action = "sts:AssumeRole"
+#       }
+#     ]
+#   })
+# }
 
-resource "aws_iam_role_policy_attachment" "translate" {
-  for_each = {
-    translate_s3_ops = aws_iam_policy.s3_ops_for_translate.arn
-  }
-  role       = aws_iam_role.translate.name
-  policy_arn = each.value
-}
+# resource "aws_iam_role_policy_attachment" "translate" {
+#   for_each = {
+#     translate_s3_ops = aws_iam_policy.s3_ops_for_translate.arn
+#   }
+#   role       = aws_iam_role.translate.name
+#   policy_arn = each.value
+# }
 
 /************************************************************
 Glue DataBrew Role
