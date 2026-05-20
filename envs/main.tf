@@ -39,6 +39,7 @@ module "lambda" {
   lambda_role_arn                     = module.iam.arn_lambda
   json_converter_lambda_loggroup_name = module.cloudwatch.name_json_converter_lambda_loggroup
   createwav_lambda_loggroup_name      = module.cloudwatch.name_createwav_lambda_loggroup
+  csv_converter_lambda_loggroup_name  = module.cloudwatch.name_csv_converter_lambda_loggroup
 }
 
 /************************************************************

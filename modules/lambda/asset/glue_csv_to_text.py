@@ -218,11 +218,11 @@ def main():
 
     # ローカルはプロファイル指定できるようにする（SSO利用等を想定）
     if args.profile:
-        # python convert_csv_to_text.py input.csv output.txt --profile admin
+        # python glue_csv_to_text.py input.csv output.txt --profile admin
         session = boto3.Session(profile_name=args.profile, region_name=args.region)
         translate = session.client("translate", region_name=args.region)
     else:
-        # python convert_csv_to_text.py input.csv output.txt --region ap-northeast-1
+        # python glue_csv_to_text.py input.csv output.txt --region ap-northeast-1
         translate = boto3.client("translate", region_name=args.region)
 
     csv_text = Path(args.input_csv).read_text(encoding="utf-8")

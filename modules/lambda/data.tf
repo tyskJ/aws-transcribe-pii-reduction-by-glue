@@ -20,3 +20,9 @@ data "archive_file" "createwav" {
   source_file = "${path.module}/asset/create_include_pii_wav.py"
   output_path = "${path.module}/asset/create_include_pii_wav.zip"
 }
+
+data "archive_file" "csv_converter" {
+  type        = "zip"
+  source_file = "${path.module}/asset/glue_csv_to_text.py"
+  output_path = "${path.module}/asset/glue_csv_to_text.zip"
+}

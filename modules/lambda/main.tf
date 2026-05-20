@@ -74,3 +74,32 @@ resource "aws_lambda_function" "createwav" {
     Name = reverse(split("/", var.createwav_lambda_loggroup_name))[0]
   }
 }
+
+resource "aws_lambda_function" "csv_converter" {
+  function_name    = reverse(split("/", var.csv_converter_lambda_loggroup_name))[0]
+  description      = "Glue CSV File Converter"
+  runtime          = "python3.14"
+  architectures    = ["x86_64"]
+  filename         = data.archive_file.csv_converter.output_path
+  source_code_hash = data.archive_file.csv_converter.output_base64sha256
+  handler          = "glue_csv_to_text.lambda_handler"
+  timeout          = 900
+  memory_size      = 128
+  ephemeral_storage {
+    size = 512
+  }
+  role = var.lambda_role_arn
+  logging_config {
+    log_group             = var.csv_converter_lambda_loggroup_name
+    log_format            = "JSON"
+    application_log_level = "INFO"
+    system_log_level      = "INFO"
+  }
+  tracing_config {
+    mode = "PassThrough"
+  }
+  skip_destroy = false
+  tags = {
+    Name = reverse(split("/", var.csv_converter_lambda_loggroup_name))[0]
+  }
+}
