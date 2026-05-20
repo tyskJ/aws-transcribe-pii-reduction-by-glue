@@ -63,7 +63,7 @@
         "TranscriptionJobName": "{% $states.input.TranscriptionJob.TranscriptionJobName %}"
       },
       "Resource": "arn:aws:states:::aws-sdk:transcribe:getTranscriptionJob",
-      "Next": "Choice",
+      "Next": "ChoiceTranscribeJobState",
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
@@ -71,7 +71,7 @@
         }
       ]
     },
-    "Choice": {
+    "ChoiceTranscribeJobState": {
       "Type": "Choice",
       "Choices": [
         {
@@ -155,15 +155,15 @@
         }
       ],
       "Assign": {
-        "datasetName": "{% $states.result.Name %}"
+        "glueDatasetName": "{% $states.result.Name %}"
       }
     },
     "CreateRecipeJob": {
       "Type": "Task",
       "Arguments": {
-        "Name": "{% $datasetName & '-recipejob' %}",
+        "Name": "{% $glueDatasetName & '-recipejob' %}",
         "RoleArn": "{% $glueRoleArn %}",
-        "DatasetName": "{% $datasetName %}",
+        "DatasetName": "{% $glueDatasetName %}",
         "RecipeReference": {
           "Name": "{% $glueRecipeName %}",
           "RecipeVersion": "{% $glueRecipeVersion %}"
@@ -181,23 +181,98 @@
         ]
       },
       "Resource": "arn:aws:states:::aws-sdk:databrew:createRecipeJob",
-      "Next": "Success",
+      "Next": "StartJobRun",
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
-          "Next": "DeleteDatasetCauseFailedCreateRecipeJob"
+          "Next": "DeleteDatasetCauseFailed"
+        }
+      ],
+      "Assign": {
+        "glueRecipeJobName": "{% $states.result.Name %}"
+      }
+    },
+    "StartJobRun": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::databrew:startJobRun",
+      "Arguments": {
+        "Name": "{% $glueRecipeJobName %}"
+      },
+      "Next": "Wait2Min",
+      "Assign": {
+        "glueJobRunId": "{% $states.result.RunId %}"
+      },
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "DeleteJobCauseFailed"
         }
       ]
     },
-    "DeleteDatasetCauseFailedCreateRecipeJob": {
+    "DeleteJobCauseFailed": {
       "Type": "Task",
       "Arguments": {
-        "Name": "{% $datasetName %}"
+        "Name": "{% $glueRecipeJobName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:deleteJob",
+      "Next": "DeleteDatasetCauseFailed"
+    },
+    "Wait2Min": {
+      "Type": "Wait",
+      "Seconds": 120,
+      "Next": "DescribeJobRun"
+    },
+    "DescribeJobRun": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $glueRecipeJobName %}",
+        "RunId": "{% $glueJobRunId %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:describeJobRun",
+      "Next": "ChoiceJobRunState"
+    },
+    "ChoiceJobRunState": {
+      "Type": "Choice",
+      "Choices": [
+        {
+          "Next": "DeleteJobCauseSuccess",
+          "Condition": "{% $states.input.State = 'SUCCEEDED' %}"
+        },
+        {
+          "Next": "DeleteJobCauseFailed",
+          "Condition": "{% $states.input.State in ['FAILED', 'TIMEOUT'] %}"
+        }
+      ],
+      "Default": "Wait2Min"
+    },
+    "DeleteJobCauseSuccess": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $glueRecipeJobName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:deleteJob",
+      "Next": "DeleteDatasetCauseSuccess"
+    },
+    "DeleteDatasetCauseSuccess": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $glueDatasetName %}"
       },
       "Resource": "arn:aws:states:::aws-sdk:databrew:deleteDataset",
-      "Next": "CreateRecipeJobFailed"
+      "Next": "Success"
     },
-    "CreateRecipeJobFailed": {
+    "Success": {
+      "Type": "Succeed"
+    },
+    "DeleteDatasetCauseFailed": {
+      "Type": "Task",
+      "Arguments": {
+        "Name": "{% $glueDatasetName %}"
+      },
+      "Resource": "arn:aws:states:::aws-sdk:databrew:deleteDataset",
+      "Next": "JobFailed"
+    },
+    "JobFailed": {
       "Type": "Fail",
       "Error": "CreateRecipeJobException"
     },
@@ -208,9 +283,6 @@
     "ConverterFailed": {
       "Type": "Fail",
       "Error": "ConverterFailedException"
-    },
-    "Success": {
-      "Type": "Succeed"
     },
     "TranscriptionJobFailed": {
       "Type": "Fail",

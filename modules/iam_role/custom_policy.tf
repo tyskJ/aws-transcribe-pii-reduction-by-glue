@@ -402,6 +402,9 @@ resource "aws_iam_policy" "glue_databrew_ops_for_sf" {
         Action = [
           "databrew:CreateDataset",
           "databrew:CreateRecipeJob",
+          "databrew:StartJobRun",
+          "databrew:DescribeJobRun",
+          "databrew:DeleteJob",
           "databrew:DeleteDataset"
         ],
         Resource = [
