@@ -48,4 +48,6 @@ response.json
 **/build
 **/vendor
 *.xlsx
+*.csv
+*.txt
 **/asset/*.json

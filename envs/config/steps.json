@@ -17,7 +17,7 @@
       "Parameters": {
         "pattern": "0[\\d\\-\\sのノー]{8,}",
         "sourceColumn": "text_en",
-        "value": "[PHONE]"
+        "value": "#####"
       }
     }
   },
@@ -27,7 +27,7 @@
       "Parameters": {
         "pattern": "(?<!\\w)(at|@)\\s*[a-zA-Z0-9.-]+\\s*\\.\\s*[a-zA-Z]{2,}\\b",
         "sourceColumn": "text_en",
-        "value": "[EMAIL]"
+        "value": "#####"
       }
     }
   }
