@@ -174,3 +174,46 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "glue_dst" {
     blocked_encryption_types = ["SSE-C"]
   }
 }
+
+/************************************************************
+Bucket - OutPuts
+************************************************************/
+### Bucket
+resource "aws_s3_bucket" "output" {
+  bucket              = "output-${var.account_id}-${var.region}-an"
+  bucket_namespace    = "account-regional"
+  force_destroy       = true
+  object_lock_enabled = false
+  tags = {
+    Name = "output-${var.account_id}-${var.region}-an"
+  }
+}
+
+### Bucket Public Access Block
+resource "aws_s3_bucket_public_access_block" "output" {
+  bucket                  = aws_s3_bucket.output.id
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
+
+### Object Ownership
+resource "aws_s3_bucket_ownership_controls" "output" {
+  bucket = aws_s3_bucket.output.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+### Server-Side Encryption
+resource "aws_s3_bucket_server_side_encryption_configuration" "output" {
+  bucket = aws_s3_bucket.output.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+    bucket_key_enabled       = true
+    blocked_encryption_types = ["SSE-C"]
+  }
+}

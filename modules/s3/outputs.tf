@@ -17,6 +17,10 @@ output "name_glue_dst_bucket" {
   value = aws_s3_bucket.glue_dst.id
 }
 
+output "name_output_bucket" {
+  value = aws_s3_bucket.output.id
+}
+
 /************************************************************
 Bucket ARN
 ************************************************************/
@@ -34,4 +38,8 @@ output "arn_glue_src_bucket" {
 
 output "arn_glue_dst_bucket" {
   value = aws_s3_bucket.glue_dst.arn
+}
+
+output "arn_output_bucket" {
+  value = aws_s3_bucket.output.arn
 }
