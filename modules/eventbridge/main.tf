@@ -45,6 +45,7 @@ resource "aws_cloudwatch_event_target" "transcribe_src_bucket_put_event_sf" {
   "transcribe_dst_bucket": "${var.transcribe_dst_bucket_name}",
   "glue_src_bucket": "${var.glue_src_bucket_name}",
   "glue_dst_bucket": "${var.glue_dst_bucket_name}",
+  "output_bucket": "${var.output_bucket_name}",
   "glue_role_arn": "${var.glue_databrew_role_arn}",
   "glue_recipe_name": "${var.glue_databrew_recipe_name}",
   "glue_recipe_version": "${var.glue_databrew_recipe_version}",

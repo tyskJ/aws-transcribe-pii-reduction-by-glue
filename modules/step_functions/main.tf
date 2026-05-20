@@ -6,7 +6,8 @@ resource "aws_sfn_state_machine" "this" {
   type     = "STANDARD"
   role_arn = var.sfrole_arn
   definition = templatefile("${path.module}/config/transcribe-glue-databrew-state-machine.asl.json", {
-    converter_lambda_arn = var.json_converter_lambda_arn
+    converter_json_lambda_arn = var.json_converter_lambda_arn
+    converter_csv_lambda_arn  = var.csv_converter_lambda_arn
   })
   logging_configuration {
     include_execution_data = true

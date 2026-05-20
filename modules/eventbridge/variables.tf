@@ -14,6 +14,10 @@ variable "glue_dst_bucket_name" {
   type = string
 }
 
+variable "output_bucket_name" {
+  type = string
+}
+
 variable "sf_arn" {
   type = string
 }

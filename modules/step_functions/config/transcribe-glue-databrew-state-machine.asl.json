@@ -10,6 +10,7 @@
         "transcribeDstBucket": "{% $states.input.transcribe_dst_bucket %}",
         "glueSrcBucket": "{% $states.input.glue_src_bucket %}",
         "glueDstBucket": "{% $states.input.glue_dst_bucket %}",
+        "outputBucket": "{% $states.input.output_bucket %}",
         "glueRoleArn": "{% $states.input.glue_role_arn %}",
         "glueRecipeName": "{% $states.input.glue_recipe_name %}",
         "glueRecipeVersion": "{% $states.input.glue_recipe_version %}",
@@ -28,7 +29,7 @@
         },
         "MediaFormat": "wav",
         "OutputBucketName": "{% $transcribeDstBucket %}",
-        "OutputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
+        "OutputKey": "{% $split($objectKey, '/')[-1] & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
         "Subtitles": {
           "Formats": ["vtt"],
           "OutputStartIndex": 0
@@ -91,19 +92,19 @@
         "TranscriptionJobName": "{% $transcribeJobName %}"
       },
       "Resource": "arn:aws:states:::aws-sdk:transcribe:deleteTranscriptionJob",
-      "Next": "ConverterLambdaInvoke"
+      "Next": "ConverterTranscribeJsonLambdaInvoke"
     },
-    "ConverterLambdaInvoke": {
+    "ConverterTranscribeJsonLambdaInvoke": {
       "Type": "Task",
       "Resource": "arn:aws:states:::lambda:invoke",
       "Output": "{% $states.result.Payload %}",
       "Arguments": {
-        "FunctionName": "${converter_lambda_arn}:$LATEST",
+        "FunctionName": "${converter_json_lambda_arn}:$LATEST",
         "Payload": {
           "inputBucket": "{% $transcribeDstBucket %}",
-          "inputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
+          "inputKey": "{% $split($objectKey, '/')[-1] & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.json' %}",
           "outputBucket": "{% $glueSrcBucket %}",
-          "outputKey": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
+          "outputKey": "{% $split($objectKey, '/')[-1] & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
         }
       },
       "Retry": [
@@ -124,7 +125,7 @@
       "Catch": [
         {
           "ErrorEquals": ["States.ALL"],
-          "Next": "ConverterFailed"
+          "Next": "ConverterJsonFailed"
         }
       ]
     },
@@ -135,7 +136,7 @@
         "Input": {
           "S3InputDefinition": {
             "Bucket": "{% $glueSrcBucket %}",
-            "Key": "{% $objectKey & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
+            "Key": "{% $split($objectKey, '/')[-1] & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.xlsx' %}"
           }
         },
         "Format": "EXCEL",
@@ -172,7 +173,7 @@
           {
             "Location": {
               "Bucket": "{% $glueDstBucket %}",
-              "Key": "{% $objectKey %}"
+              "Key": "{% $split($objectKey, '/')[-1] %}"
             },
             "Format": "CSV",
             "Overwrite": true,
@@ -259,7 +260,45 @@
         "Name": "{% $glueDatasetName %}"
       },
       "Resource": "arn:aws:states:::aws-sdk:databrew:deleteDataset",
-      "Next": "Success"
+      "Next": "ConverterGlueCsvLambdaInvoke"
+    },
+    "ConverterGlueCsvLambdaInvoke": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Output": "{% $states.result.Payload %}",
+      "Arguments": {
+        "FunctionName": "${converter_csv_lambda_arn}:$LATEST",
+        "Payload": {
+          "inputBucket": "{% $glueDstBucket %}",
+          "inputKey": "{% $split($objectKey, '/')[-1] & '/' & $glueRecipeJobName & '_part00000.csv' %}",
+          "outputBucket": "{% $outputBucket %}",
+          "outputKey": "{% $split($objectKey, '/')[-1] & '/' & $replace($split($objectKey, '/')[-1], /\\.[^.]+$/, '') & '.txt' %}"
+        }
+      },
+      "Retry": [
+        {
+          "ErrorEquals": [
+            "Lambda.ServiceException",
+            "Lambda.AWSLambdaException",
+            "Lambda.SdkClientException",
+            "Lambda.TooManyRequestsException"
+          ],
+          "IntervalSeconds": 1,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "Success",
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "ConverterCsvFailed"
+        }
+      ]
+    },
+    "ConverterCsvFailed": {
+      "Type": "Fail"
     },
     "Success": {
       "Type": "Succeed"
@@ -280,7 +319,7 @@
       "Type": "Fail",
       "Error": "CreateDatasetException"
     },
-    "ConverterFailed": {
+    "ConverterJsonFailed": {
       "Type": "Fail",
       "Error": "ConverterFailedException"
     },

@@ -72,6 +72,7 @@ module "step_functions" {
   sfrole_arn                = module.iam.arn_sfrole
   sflogs_arn                = module.cloudwatch.arn_sf_loggroup
   json_converter_lambda_arn = module.lambda.arn_json_converter_lambda
+  csv_converter_lambda_arn  = module.lambda.arn_csv_converter_lambda
 }
 
 /************************************************************
@@ -84,6 +85,7 @@ module "eventbridge" {
   transcribe_dst_bucket_name   = module.s3.name_transcribe_dst_bucket
   glue_src_bucket_name         = module.s3.name_glue_src_bucket
   glue_dst_bucket_name         = module.s3.name_glue_dst_bucket
+  output_bucket_name           = module.s3.name_output_bucket
   sf_arn                       = module.step_functions.arn_sf
   eventbridge_rule_role_arn    = module.iam.arn_eventbridge_rule_role
   glue_databrew_role_arn       = module.iam.arn_glue_databrew_role
