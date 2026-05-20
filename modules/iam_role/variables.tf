@@ -25,3 +25,7 @@ variable "glue_src_bucket_arn" {
 variable "glue_dst_bucket_arn" {
   type = string
 }
+
+variable "output_bucket_arn" {
+  type = string
+}

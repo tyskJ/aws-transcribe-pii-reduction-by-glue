@@ -171,7 +171,8 @@ resource "aws_iam_policy" "s3_ops_for_lambda" {
           "s3:GetObject"
         ],
         Resource = [
-          "${var.transcribe_dst_bucket_arn}/*"
+          "${var.transcribe_dst_bucket_arn}/*",
+          "${var.glue_dst_bucket_arn}/*"
         ]
       },
       {
@@ -182,7 +183,8 @@ resource "aws_iam_policy" "s3_ops_for_lambda" {
         ],
         Resource = [
           "${var.transcribe_src_bucket_arn}/*",
-          "${var.glue_src_bucket_arn}/*"
+          "${var.glue_src_bucket_arn}/*",
+          "${var.output_bucket_arn}/*"
         ]
       }
     ]
